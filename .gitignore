@@ -28,7 +28,10 @@ wheels/
 *.ipynb_checkpoints/
 
 # Data and models
-data/
+data/stage1_train/
+data/stage1_test/
+data/stage2_test_final/
+data/*.zip
 *.pth
 *.pt
 checkpoints/
