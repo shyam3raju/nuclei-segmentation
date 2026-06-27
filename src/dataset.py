@@ -66,9 +66,13 @@ class NucleiDataset(Dataset):
         image_path = image_folder / 'images' / f'{image_id}.png'
         image = np.array(Image.open(image_path))
         
-        # Handle grayscale images - convert to RGB for consistency
+        # Handle different image formats
         if len(image.shape) == 2:
+            # Grayscale - convert to RGB
             image = np.stack([image] * 3, axis=-1)
+        elif image.shape[2] == 4:
+            # RGBA - convert to RGB (remove alpha channel)
+            image = image[:, :, :3]
         
         # Load and combine all masks for this image
         # Each nucleus may have its own mask file - we combine them into one binary mask
