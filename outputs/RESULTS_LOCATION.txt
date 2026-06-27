@@ -1,0 +1,49 @@
+═══════════════════════════════════════════════════════════════
+                    TRAINING RESULTS
+═══════════════════════════════════════════════════════════════
+
+This folder will contain all your training results:
+
+📦 AFTER TRAINING:
+
+  ✓ best_model.pth
+    → Your trained U-Net model (best validation Dice score)
+    → Use this for making predictions on new images
+    → Size: ~120 MB
+
+  ✓ final_model.pth
+    → Model after the last training epoch
+    → Usually best_model.pth is better
+
+  ✓ training_curves.png
+    → Graph showing training progress
+    → Loss and Dice scores over epochs
+    → Use in presentations/reports
+
+
+📊 AFTER EVALUATION:
+
+  ✓ evaluation_results.txt
+    → Your model's performance metrics
+    → Dice coefficient and IoU scores
+    → Number of test samples
+
+
+🖼️ AFTER VISUALIZATION:
+
+  ✓ predictions/
+    → Folder with prediction images
+    → Shows: input | ground truth | prediction
+    → prediction_1.png, prediction_2.png, etc.
+    → overlay_1.png (prediction overlaid on image)
+
+
+═══════════════════════════════════════════════════════════════
+
+To generate these files, run:
+
+  1. Training:     4_full_training.bat
+  2. Evaluation:   5_evaluate.bat
+  3. Predictions:  6_visualize.bat
+
+═══════════════════════════════════════════════════════════════

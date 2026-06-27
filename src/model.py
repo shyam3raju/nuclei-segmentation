@@ -86,8 +86,10 @@ class Up(nn.Module):
         # to avoid checkerboard artifacts
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         
-        # After concatenating with skip connection, we have in_channels total
-        self.conv = DoubleConv(in_channels, out_channels)
+        # After upsampling and concatenating with skip connection:
+        # We receive in_channels from below and out_channels from skip
+        # Total input to conv: in_channels + out_channels
+        self.conv = DoubleConv(in_channels + out_channels, out_channels)
     
     def forward(self, x1, x2):
         """
