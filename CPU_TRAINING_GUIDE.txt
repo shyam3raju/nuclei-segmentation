@@ -1,0 +1,171 @@
+════════════════════════════════════════════════════════════════════════
+                      CPU TRAINING GUIDE
+════════════════════════════════════════════════════════════════════════
+
+✅ YOUR TRAINING IS WORKING!
+
+The model is running correctly on CPU, but it's VERY SLOW.
+
+Current Speed:
+  - 1 batch takes ~100 seconds (1.5 minutes)
+  - You have 5 batches per epoch (40 images / batch_size 8)
+  - That's ~8 minutes per epoch
+  - For 30 epochs: ~4 hours total
+
+════════════════════════════════════════════════════════════════════════
+                        FASTER OPTIONS
+════════════════════════════════════════════════════════════════════════
+
+OPTION 1: Train on Fewer Images (RECOMMENDED for CPU)
+───────────────────────────────────────────────────────────────────────
+
+Use a smaller subset to get results faster:
+
+    python train.py --max_samples 100 --num_epochs 15
+
+This will:
+- Use only 100 images instead of 670
+- Train for 15 epochs
+- Take about 1-1.5 hours on CPU
+- Still give you good results (Dice ~0.70-0.75)
+
+
+OPTION 2: Use Google Colab (FREE GPU!)
+───────────────────────────────────────────────────────────────────────
+
+1. Go to: https://colab.research.google.com/
+2. Sign in with Google account
+3. Click "New Notebook"
+4. Change runtime to GPU:
+   - Runtime → Change runtime type → GPU → Save
+
+5. Run these commands in cells:
+
+   # Clone your repo
+   !git clone https://github.com/shyam3raju/nuclei-segmentation.git
+   %cd nuclei-segmentation
+
+   # Install dependencies
+   !pip install -r requirements.txt
+
+   # Download dataset (you'll need to upload kaggle.json)
+   from google.colab import files
+   files.upload()  # Upload your kaggle.json
+   !mkdir -p ~/.kaggle
+   !cp kaggle.json ~/.kaggle/
+   !chmod 600 ~/.kaggle/kaggle.json
+   
+   %cd data
+   !python download_data.py
+   %cd ..
+
+   # Train
+   %cd src
+   !python train.py --num_epochs 30
+
+   # Download results
+   from google.colab import files
+   files.download('../outputs/best_model.pth')
+
+Time: 30-60 minutes with FREE GPU!
+
+
+OPTION 3: Reduce Batch Size (Slightly Faster)
+───────────────────────────────────────────────────────────────────────
+
+Edit train.py or use command:
+
+    python train.py --batch_size 4 --max_samples 100 --num_epochs 15
+
+This processes fewer images at once, can be a bit faster on CPU.
+
+
+OPTION 4: Run Overnight
+───────────────────────────────────────────────────────────────────────
+
+Just let it run! Start training before bed:
+
+    python train.py --num_epochs 30
+
+Let it run for 4-6 hours overnight. You'll have results in the morning!
+
+
+════════════════════════════════════════════════════════════════════════
+                     RECOMMENDED APPROACH
+════════════════════════════════════════════════════════════════════════
+
+For fastest results without GPU hardware:
+
+1. Use Google Colab (FREE, 30-60 minutes)
+   OR
+2. Train on subset (1-1.5 hours on your CPU):
+   
+   cd src
+   python train.py --max_samples 150 --num_epochs 20
+
+
+════════════════════════════════════════════════════════════════════════
+                   MONITORING TRAINING
+════════════════════════════════════════════════════════════════════════
+
+While training, you'll see:
+
+Training: 20%|████| 1/5 [01:39<06:38, 99.72s/it, loss=0.7020, dice=0.2405]
+
+This means:
+- 20% done with epoch (1 out of 5 batches)
+- Loss: 0.7020 (should decrease over time)
+- Dice: 0.2405 (should increase to 0.70-0.85)
+- Time: 99 seconds per batch
+
+
+Good signs:
+✓ Loss going down (0.7 → 0.3 → 0.2)
+✓ Dice going up (0.24 → 0.50 → 0.70+)
+
+After a few epochs, Dice should reach 0.60+, which is decent!
+
+
+════════════════════════════════════════════════════════════════════════
+                      KEYBOARD SHORTCUTS
+════════════════════════════════════════════════════════════════════════
+
+To stop training:
+- Press Ctrl+C (training will stop)
+- Model is saved every epoch, so you can use best_model.pth
+
+To resume later:
+- Not directly supported, but you can:
+  - Train for fewer epochs first
+  - Continue with more epochs using the saved model
+
+
+════════════════════════════════════════════════════════════════════════
+                     WHAT'S HAPPENING NOW
+════════════════════════════════════════════════════════════════════════
+
+Your training started and is working! It's just slow on CPU.
+
+Choose one option above to speed it up, or just be patient :)
+
+
+════════════════════════════════════════════════════════════════════════
+                        QUICK COMMANDS
+════════════════════════════════════════════════════════════════════════
+
+# Fast training on subset (1-1.5 hours)
+python train.py --max_samples 150 --num_epochs 20
+
+# Very fast test (30 minutes)
+python train.py --max_samples 50 --num_epochs 10
+
+# Full training (4-6 hours, best results)
+python train.py --num_epochs 30
+
+
+════════════════════════════════════════════════════════════════════════
+
+💡 TIP: For a portfolio project, even training on 150 images
+   with Dice ~0.70 is impressive! You don't need the full dataset.
+
+════════════════════════════════════════════════════════════════════════

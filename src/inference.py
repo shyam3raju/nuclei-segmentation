@@ -67,9 +67,13 @@ def predict_image(model, image_path, transform, device, threshold=0.5):
     # Load image
     original_image = np.array(Image.open(image_path))
     
-    # Handle grayscale images
+    # Handle different image formats
     if len(original_image.shape) == 2:
+        # Grayscale - convert to RGB
         original_image = np.stack([original_image] * 3, axis=-1)
+    elif original_image.shape[2] == 4:
+        # RGBA - convert to RGB (remove alpha channel)
+        original_image = original_image[:, :, :3]
     
     # Apply transforms
     transformed = transform(image=original_image)
@@ -192,11 +196,22 @@ def run_inference_on_folder(model, data_dir, output_dir, transform, device,
         # Load ground truth if available
         masks_dir = folder / 'masks'
         if masks_dir.exists():
-            ground_truth = np.zeros((256, 256), dtype=np.float32)
-            for mask_file in masks_dir.glob('*.png'):
-                mask = np.array(Image.open(mask_file))
-                ground_truth = np.maximum(ground_truth, mask)
-            ground_truth = (ground_truth > 0).astype(np.uint8)
+            # Get size from first mask to initialize properly
+            mask_files = list(masks_dir.glob('*.png'))
+            if mask_files:
+                first_mask = np.array(Image.open(mask_files[0]))
+                ground_truth = np.zeros(first_mask.shape[:2], dtype=np.float32)
+                
+                for mask_file in mask_files:
+                    mask = np.array(Image.open(mask_file))
+                    # Handle different sized masks by resizing to ground_truth size
+                    if mask.shape[:2] != ground_truth.shape:
+                        mask = cv2.resize(mask, (ground_truth.shape[1], ground_truth.shape[0]), 
+                                        interpolation=cv2.INTER_NEAREST)
+                    ground_truth = np.maximum(ground_truth, mask)
+                ground_truth = (ground_truth > 0).astype(np.uint8)
+            else:
+                ground_truth = None
         else:
             ground_truth = None
         
